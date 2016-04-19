@@ -1,0 +1,33 @@
+<!doctype html>
+<head>
+</head>
+<body>
+  <p>Editable div (click record first):</p>
+  <div class="editor" contenteditable="true" style="border: 1px solid black">
+  </div>
+  <p>Edits:</p>
+  <textarea id="edits" style="display: block; width: 100%; height: 400px; overflow-y: scroll"></textarea>
+  <button id="record">Record</button>
+  <button id="playback">Playback!</button>
+  <input id="playbackrate" value="2.0">
+
+  <p>Playback:</p>
+  <div class="mirror"></div>
+  <script src="pere.js"></script>
+  <script>
+    var $ = document.querySelector.bind(document);
+    var editsel = $('#edits');
+    var unobserve = function(){};
+    $('#record').addEventListener('click', function() {
+      unobserve()
+      var edits = pere.record($('.editor'), function(edit) {
+        editsel.value = '[\n' + edits.map(JSON.stringify).join(',\n') + '\n]';
+      })
+      unobserve = edits.unobserve;
+    });
+    $('#playback').addEventListener('click', function() {
+      var edits = JSON.parse(editsel.value);
+      pere.playback($('.mirror'), edits, $('#playbackrate').value);
+    });
+  </script>
+</body>
